@@ -12,8 +12,17 @@ export default class UsersController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {
-    return this.responseHelper.sendSuccess('Users retrieved successfully.', await User.all())
+  async index({ request }: HttpContext) {
+    const schema = vine.object({
+      page: vine.number().optional(),
+      per_page: vine.number().optional(),
+    })
+    const input = await vine.validate({ schema, data: request.qs() })
+
+    const users = await User.query()
+      .orderBy('id', 'desc')
+      .paginate(input.page ?? 1, input.per_page ?? 10)
+    return this.responseHelper.sendSuccess('Users retrieved successfully.', users)
   }
 
   /**
@@ -21,6 +30,7 @@ export default class UsersController {
    */
   async store({ request }: HttpContext) {
     const schema = vine.object({
+      full_name: vine.string().trim().toLowerCase().nullable(),
       email: vine
         .string()
         .email()

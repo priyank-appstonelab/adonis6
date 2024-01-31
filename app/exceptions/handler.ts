@@ -24,8 +24,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       this.responseHelper.sendError(error.messages[0].message, error.messages)
       return
     }
-    return this.responseHelper.sendError()
-    // return super.handle(error, ctx)
+    // return this.responseHelper.sendError()
+    return super.handle(error, ctx)
   }
 
   /**
